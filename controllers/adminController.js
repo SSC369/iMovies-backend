@@ -1,19 +1,19 @@
-const User = require("../models/userModel");
+const Admin = require("../models/adminModel");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
-module.exports.register = async (req, res, next) => {
+module.exports.adminRegister = async (req, res, next) => {
   try {
     const { name: username, password, email } = req.body;
     console.log(username);
     //check that is there a same username exits
-    const usernameCheck = await User.findOne({ username });
+    const usernameCheck = await Admin.findOne({ username });
     if (usernameCheck) {
       return res.json({ msg: "Username already used", status: false });
     }
 
     //check that is there a same email exists
-    const emailCheck = await User.findOne({ email });
+    const emailCheck = await Admin.findOne({ email });
     if (emailCheck) {
       return res.json({ msg: "Email already used", status: false });
     }
@@ -21,54 +21,54 @@ module.exports.register = async (req, res, next) => {
     //create hashed pass
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
-    const user = await User.create({
+    const admin = await Admin.create({
       email,
       username,
       password: hashedPassword,
     });
 
-    const userDetails = {
-      name: user.username,
+    const adminDetails = {
+      name: admin.username,
       email,
     };
 
     const secretKey = "SSC";
     const payload = {
-      userDetails,
+      adminDetails,
     };
     const jwtToken = await jwt.sign(payload, secretKey);
 
-    return res.json({ status: true, jwtToken, userDetails });
+    return res.json({ status: true, jwtToken, adminDetails });
   } catch (error) {
     return res.json({ msg: "Server issue :(", status: false });
   }
 };
 
-module.exports.login = async (req, res, next) => {
+module.exports.adminLogin = async (req, res, next) => {
   try {
     const { email, password } = req.body;
 
-    //authentication for user
-    const user = await User.findOne({ email });
-    if (!user)
+    //authentication for admin
+    const admin = await Admin.findOne({ email });
+    if (!admin)
       return res.json({ msg: "Email is not registered!", status: false });
 
-    const isPasswordValid = await bcrypt.compare(password, user.password);
+    const isPasswordValid = await bcrypt.compare(password, admin.password);
     if (!isPasswordValid)
       return res.json({ msg: "Incorrect Password :(", status: false });
 
-    const userDetails = {
-      username: user.username,
+    const adminDetails = {
+      username: admin.username,
       email,
     };
 
     const secretKey = "SSC";
     const payload = {
-      userDetails,
+      adminDetails,
     };
     const jwtToken = await jwt.sign(payload, secretKey);
 
-    return res.json({ status: true, jwtToken, userDetails });
+    return res.json({ status: true, jwtToken, adminDetails });
   } catch (error) {
     return res.json({ msg: "Server issue :(", status: false });
   }

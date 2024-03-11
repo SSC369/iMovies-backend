@@ -36,7 +36,7 @@ module.exports.addShow = async (req, res, next) => {
     }
 
     console.log(showdate);
-    const adminEmail = req.user.adminDetails.adminEmail;
+    const adminEmail = req.user.adminDetails.email;
 
     const show = await Show.create({
       movieId,
@@ -136,8 +136,9 @@ module.exports.getShow = async (req, res) => {
 
 module.exports.getAdminShows = async (req, res) => {
   try {
-    const { adminEmail } = req.user.adminDetails;
-    const shows = await Show.find({ adminEmail });
+    const { email } = req.user.adminDetails;
+
+    const shows = await Show.find({ adminEmail: email });
 
     const updated = await Promise.all(
       shows.map(async (s) => {
@@ -179,8 +180,7 @@ module.exports.deleteShow = async (req, res) => {
     const findMovie = await Movie.findOne({ movieId });
     const prevMovieShows = findMovie.shows;
     const filteredShows = prevMovieShows.filter((s) => s !== showId);
-    console.log(filteredShows);
-    const updatedMovie = await Movie.updateOne(
+    await Movie.updateOne(
       { movieId },
       {
         $set: {

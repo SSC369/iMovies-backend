@@ -1,7 +1,7 @@
 const jwt = require("jsonwebtoken");
 const secretKey = "SSC";
 
-const fetchUser = (req, res, next) => {
+const fetchAdmin = (req, res, next) => {
   // get user from jwt token and add id to req object
   const token = req.header("auth-token");
   if (!token) {
@@ -24,4 +24,4 @@ const fetchUser = (req, res, next) => {
   }
 };
 
-module.exports = fetchUser;
+module.exports = fetchAdmin;
