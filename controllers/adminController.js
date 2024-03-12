@@ -5,7 +5,7 @@ const jwt = require("jsonwebtoken");
 module.exports.adminRegister = async (req, res, next) => {
   try {
     const { name: username, password, email } = req.body;
-    console.log(username);
+
     //check that is there a same username exits
     const usernameCheck = await Admin.findOne({ username });
     if (usernameCheck) {

@@ -13,7 +13,7 @@ const fetchUser = (req, res, next) => {
   try {
     //extract payload data from the jwt by verifying jwt with the help of secret key.
     const data = jwt.verify(token, secretKey);
-    console.log(data);
+
     req.user = data;
     next();
   } catch (error) {

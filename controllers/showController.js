@@ -25,8 +25,6 @@ module.exports.addShow = async (req, res, next) => {
         })
       );
 
-      console.log(isFound);
-
       if (isFound.includes(true)) {
         return res.json({
           status: false,
@@ -35,7 +33,6 @@ module.exports.addShow = async (req, res, next) => {
       }
     }
 
-    console.log(showdate);
     const adminEmail = req.user.adminDetails.email;
 
     const show = await Show.create({

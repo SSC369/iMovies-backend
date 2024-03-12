@@ -46,9 +46,14 @@ module.exports.addMovie = async (req, res, next) => {
 
 module.exports.getMovies = async (req, res, next) => {
   try {
+    const { query } = req.query || "";
     const movies = await Movie.find();
+    let lowercaseQuery = query.toLowerCase();
 
-    return res.json({ status: true, movies });
+    const filteredMovies = movies.filter((m) =>
+      m.movieName.includes(lowercaseQuery)
+    );
+    return res.status(200).json({ status: true, movies: filteredMovies });
   } catch (error) {
     console.log(error);
     return res.json({ status: false, msg: "Server issue :(" });
