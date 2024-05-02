@@ -25,12 +25,10 @@ module.exports.addTheatre = async (req, res, next) => {
       });
     }
 
-    const adminName = req?.user?.adminDetails?.adminName;
     const adminEmail = req?.user?.adminDetails?.adminEmail;
     await Theatre.create({
       theatreName: lowerCaseName,
       location,
-      adminName,
       balconySeatPrice,
       middleSeatPrice,
       lowerSeatPrice,
@@ -39,6 +37,8 @@ module.exports.addTheatre = async (req, res, next) => {
       lowerSeats,
       theatreId,
       adminEmail,
+      updatedBy: adminEmail,
+      updatedDate: new Date(),
     });
 
     return res.json({ status: true, msg: "Theatre added successfully :)" });
@@ -61,10 +61,75 @@ module.exports.getTheatre = async (req, res, next) => {
 module.exports.getTheatres = async (req, res, next) => {
   try {
     const theatres = await Theatre.find();
-    console.log(theatres);
     return res.json({ status: true, theatres });
   } catch (error) {
     console.log(error);
+    return res.json({ status: false, msg: "Server issue :(" });
+  }
+};
+
+module.exports.editTheatre = async (req, res) => {
+  try {
+    const {
+      theatreName,
+      location,
+      balconySeatPrice,
+      middleSeatPrice,
+      lowerSeatPrice,
+      balconySeats,
+      middleSeats,
+      lowerSeats,
+    } = req.body;
+
+    const { theatreId } = req.params;
+
+    //check if theatre is already existed
+    const lowerCaseName = theatreName.toLowerCase();
+    const findTheatre = await Theatre.findOne({
+      theatreName: lowerCaseName,
+      location,
+    });
+
+    if (findTheatre) {
+      return res.json({
+        status: false,
+        msg: "Theatre  is already Registered!",
+      });
+    }
+
+    const adminEmail = req?.user?.adminDetails?.adminEmail;
+
+    await Theatre.updateOne(
+      { theatreId },
+      {
+        theatreName: lowerCaseName,
+        location,
+        balconySeatPrice,
+        middleSeatPrice,
+        lowerSeatPrice,
+        balconySeats,
+        middleSeats,
+        lowerSeats,
+        theatreId,
+        adminEmail,
+        updatedBy: adminEmail,
+        updatedDate: new Date(),
+      }
+    );
+
+    return res.json({ status: true, msg: "Theatre edited successfully :)" });
+  } catch (error) {
+    console.log(error);
+    return res.json({ status: false, msg: "Server issue :(" });
+  }
+};
+
+module.exports.getTheatreById = async (req, res, next) => {
+  try {
+    const { theatreId } = req.params;
+    const theatre = await Theatre.findOne({ theatreId });
+    return res.json({ status: true, theatre });
+  } catch (error) {
     return res.json({ status: false, msg: "Server issue :(" });
   }
 };

@@ -5,10 +5,6 @@ const theatreSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  adminName: {
-    type: String,
-    required: true,
-  },
   theatreId: {
     type: String,
     required: true,
@@ -44,6 +40,12 @@ const theatreSchema = new mongoose.Schema({
   adminEmail: {
     type: String,
     required: true,
+  },
+  updatedDate: {
+    type: Date,
+  },
+  updatedBy: {
+    type: String,
   },
 });
 

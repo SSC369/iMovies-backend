@@ -44,8 +44,7 @@ module.exports.getSavedMovies = async (req, res) => {
       favMovies.map(async (fav) => {
         const movieId = fav.movieId;
         const movie = await Movie.findOne({ movieId });
-
-        return movie;
+        if (movie) return movie;
       })
     );
 

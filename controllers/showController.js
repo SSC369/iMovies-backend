@@ -35,7 +35,7 @@ module.exports.addShow = async (req, res, next) => {
 
     const adminEmail = req.user.adminDetails.email;
 
-    const show = await Show.create({
+    await Show.create({
       movieId,
       theatreName: lowercaseTheatre,
       showtime,
@@ -45,12 +45,11 @@ module.exports.addShow = async (req, res, next) => {
       tickets: {},
     });
 
-    const updated = await Movie.updateOne(
+    await Movie.updateOne(
       { movieId },
       {
         $addToSet: {
           shows: showId,
-          theatres: lowercaseTheatre,
         },
       }
     );

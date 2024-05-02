@@ -35,8 +35,6 @@ const movieSchema = new mongoose.Schema({
   },
   //contains showid's
   shows: [{ type: String }],
-  //array of all theatre id's where this movie is being screening
-  theatres: [{ type: String }],
 });
 
 module.exports = mongoose.model("Movie", movieSchema);

@@ -26,9 +26,10 @@ module.exports.getBookings = async (req, res) => {
     const userEmail = req.user.userDetails.email;
     const getBookings = await Booking.find({ userEmail });
     const bookings = await Promise.all(
-      getBookings.map(async (b) => {
+      getBookings?.map(async (b) => {
         const show = await Show.findOne({ showId: b.showId });
         const movie = await Movie.findOne({ movieId: show.movieId });
+
         const data = {
           bookingId: b.bookingId,
           userEmail,
@@ -43,10 +44,10 @@ module.exports.getBookings = async (req, res) => {
       })
     );
 
-    return res.json({ status: true, bookings });
+    return res.status(200).json({ status: true, bookings });
   } catch (error) {
     console.log(error);
-    return res.json({ status: false, msg: "Server issue :(" });
+    return res.status(500).json({ status: false, msg: "Server issue :(" });
   }
 };
 

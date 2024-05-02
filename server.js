@@ -7,6 +7,7 @@ const movieRoutes = require("./routes/movieRoutes");
 const favoriteRoutes = require("./routes/favoriteRoutes");
 const bookingRoutes = require("./routes/bookingRoutes");
 const adminRoutes = require("./routes/adminRoutes");
+const reviewRoutes = require("./routes/reviewRoutes");
 require("dotenv").config({ path: "./.env" });
 
 const app = express();
@@ -25,6 +26,7 @@ app.use("/api/movie", movieRoutes);
 app.use("/api/favorite", favoriteRoutes);
 app.use("/api/bookings", bookingRoutes);
 app.use("/api/auth/admin", adminRoutes);
+app.use("/api/review", reviewRoutes);
 
 const mongoUri = process.env.MONGODB_CONNECTION_LINK;
 

@@ -47,7 +47,6 @@ module.exports.register = async (req, res, next) => {
 module.exports.login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
-
     //authentication for user
     const user = await User.findOne({ email });
     if (!user)
@@ -58,7 +57,7 @@ module.exports.login = async (req, res, next) => {
       return res.json({ msg: "Incorrect Password :(", status: false });
 
     const userDetails = {
-      username: user.username,
+      name: user.username,
       email,
     };
 
@@ -70,6 +69,28 @@ module.exports.login = async (req, res, next) => {
 
     return res.json({ status: true, jwtToken, userDetails });
   } catch (error) {
+    return res.json({ msg: "Server issue :(", status: false });
+  }
+};
+
+module.exports.editProfile = async (req, res) => {
+  try {
+    const { name, password, email } = req.body;
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+    await User.updateOne(
+      { email },
+      {
+        $set: {
+          name,
+          password: hashedPassword,
+          email: email,
+        },
+      }
+    );
+    res.status(200).json({ status: true, msg: "Profile updated successfully" });
+  } catch (error) {
+    console.log(error);
     return res.json({ msg: "Server issue :(", status: false });
   }
 };

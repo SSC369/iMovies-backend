@@ -58,7 +58,7 @@ module.exports.adminLogin = async (req, res, next) => {
       return res.json({ msg: "Incorrect Password :(", status: false });
 
     const adminDetails = {
-      username: admin.username,
+      name: admin.username,
       email,
     };
 
