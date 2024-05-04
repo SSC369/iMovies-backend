@@ -3,6 +3,14 @@ const Movie = require("../models/movieModel");
 const Theatre = require("../models/theatreModel");
 const { v4 } = require("uuid");
 
+const convertIntoDate = (time, date) => {
+  // Input time and date strings
+  var dateTimeString = date + "T" + time + ":00.000Z";
+  var showDateTime = new Date(dateTimeString);
+
+  return showDateTime;
+};
+
 module.exports.addShow = async (req, res, next) => {
   try {
     const { theatre, showtime, showdate, showId, movieId } = req.body;
@@ -79,7 +87,7 @@ module.exports.updateShowTickets = async (req, res, next) => {
       { showId },
       { $set: { tickets: modifiedShowTickets } }
     );
-    return res.json({ status: false, msg: "Seats updated successfully" });
+    return res.json({ status: true, msg: "Seats updated successfully" });
   } catch (error) {
     console.log(error);
     return res.json({ status: false, msg: "Server issue :)" });
@@ -89,30 +97,32 @@ module.exports.updateShowTickets = async (req, res, next) => {
 module.exports.getMovieShows = async (req, res, next) => {
   try {
     const { movieId } = req.params;
-
     const getMovie = await Movie.findOne({ movieId });
-
     const movieShows = getMovie?.shows;
 
     const showData = await Promise.all(
-      movieShows?.map(async (s) => {
+      movieShows.map(async (s) => {
         const show = await Show.findOne({ showId: s });
 
-        const upperCaseTheatreName =
-          show?.theatreName[0].toUpperCase() + show?.theatreName.slice(1);
+        const dateObject = convertIntoDate(show.showtime, show.showdate);
 
-        const showDetails = {
-          showtime: show?.showtime,
-          showdate: show?.showdate,
-          theatre: upperCaseTheatreName,
-          showId: show?.showId,
-        };
-
-        return showDetails;
+        if (dateObject > new Date()) {
+          const upperCaseTheatreName =
+            show?.theatreName[0].toUpperCase() + show?.theatreName.slice(1);
+          const showDetails = {
+            showtime: show?.showtime,
+            showdate: show?.showdate,
+            theatre: upperCaseTheatreName,
+            showId: show?.showId,
+          };
+          return showDetails;
+        }
       })
     );
-
-    return res.json({ status: true, showData });
+    const filteredShowsData = showData.filter(
+      (s) => s !== null && s !== undefined
+    );
+    return res.json({ status: true, showData: filteredShowsData });
   } catch (error) {
     console.log(error);
     return res.json({ status: false, msg: "Server issue :)" });
